@@ -1,0 +1,66 @@
+# psq.clj
+
+A Clojure persistent priority search queue library based on Ralf Hinze's
+priority search pennants (see R. Hinze, A Simple Implementation Technique for
+Priority Search Queues).
+
+In addition to the functionality presented in the paper, this implementation
+supports nth (in key order), rank (lookup a key's index in key order), split
+(sub-PSQs less/greater than the given key, plus the entry at the key if
+present) and subrange (sub-PSQs bounded by the given keys), all in
+logarithmic time.
+
+
+## Usage
+
+There is a single public namespace called `psq.core`. See the included
+docstrings for details.
+
+
+## Releases and dependency information
+
+This is an experimental library. Alpha releases are available from Clojars,
+however a custom build may currently be necessary for use with versions of
+Clojure other than the one used to build the release. (This will be fixed in
+a future release.)
+
+[Leiningen](http://leiningen.org/) dependency information:
+
+    [psq "${version}"]
+
+[Maven](http://maven.apache.org/) dependency information:
+
+    <dependency>
+      <groupId>psq</groupId>
+      <artifactId>psq</artifactId>
+      <version>${version}</version>
+    </dependency>
+
+[Gradle](http://www.gradle.org/) dependency information:
+
+    compile "psq:psq:${version}"
+
+
+## Clojure code reuse
+
+The implementations of the `static public IPersistentMap create(…)` and
+`static public PersistentPrioritySearchQueue create(…)` methods are adapted from
+the implementations of the analogous methods in Clojure.
+
+The Clojure source files containing the relevant code carry the following
+copyright notice:
+
+    Copyright (c) Rich Hickey. All rights reserved.
+    The use and distribution terms for this software are covered by the
+    Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
+    which can be found in the file epl-v10.html at the root of this distribution.
+    By using this software in any fashion, you are agreeing to be bound by
+      the terms of this license.
+    You must not remove this notice, or any other, from this software.
+
+
+## Licence
+
+Copyright © 2016 Michał Marczyk
+
+Distributed under the Eclipse Public License version 1.0.
