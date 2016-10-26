@@ -26,19 +26,19 @@ a future release.)
 
 [Leiningen](http://leiningen.org/) dependency information:
 
-    [psq "${version}"]
+    [psq.clj "${version}"]
 
 [Maven](http://maven.apache.org/) dependency information:
 
     <dependency>
-      <groupId>psq</groupId>
-      <artifactId>psq</artifactId>
+      <groupId>psq.clj</groupId>
+      <artifactId>psq.clj</artifactId>
       <version>${version}</version>
     </dependency>
 
 [Gradle](http://www.gradle.org/) dependency information:
 
-    compile "psq:psq:${version}"
+    compile "psq.clj:psq.clj:${version}"
 
 
 ## Clojure code reuse

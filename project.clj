@@ -1,4 +1,4 @@
-(defproject psq.clj "0.0.1"
+(defproject psq.clj "0.0.2-SNAPSHOT"
   :description "Persistent Priority Search Queues in Clojure"
   :url "https://github.com/michalmarczyk/psq.clj"
   :license {:name "Eclipse Public License"
