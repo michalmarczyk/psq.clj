@@ -672,6 +672,77 @@ public final class PersistentPrioritySearchQueue
         return null;
     }
 
+    public MapEntry nearestLeft(Object key, boolean inclusive) {
+        if (null == winner)
+            return null;
+
+        int topc = kcomp.compare(key, winner.ubound);
+        if (0 == topc) {
+            if (inclusive)
+                return lookup(key, winner);
+            Loser loser = winner.losers;
+            if (null == loser) {
+                return null;
+            }
+            while (null != loser.right) {
+                loser = loser.right;
+            }
+            return lookup(loser.split, winner);
+        } else if (topc > 0) {
+            return lookup(winner.ubound, winner);
+        }
+
+        Loser prev = null;
+        Loser loser = winner.losers;
+        while (null != loser) {
+            int c = kcomp.compare(key, loser.split);
+            if (0 == c) {
+                if (inclusive)
+                    return lookup(key, winner);
+                loser = loser.left;
+            } else if (c < 0) {
+                loser = loser.left;
+            } else {
+                prev = loser;
+                loser = loser.right;
+            }
+        }
+        if (null == prev)
+            return null;
+        return lookup(prev.split, winner);
+    }
+
+    public MapEntry nearestRight(Object key, boolean inclusive) {
+        if (null == winner)
+            return null;
+
+        int topc = kcomp.compare(key, winner.ubound);
+        if (0 == topc) {
+            if (inclusive)
+                return lookup(key, winner);
+            return null;
+        } else if (topc > 0) {
+            return null;
+        }
+
+        Object prevSplit = winner.ubound;
+        Loser loser = winner.losers;
+        while (null != loser) {
+            int c = kcomp.compare(key, loser.split);
+            if (0 == c) {
+                if (inclusive)
+                    return lookup(key, winner);
+                loser = loser.right;
+            } else if (c > 0) {
+                loser = loser.right;
+            } else {
+                prevSplit = loser.split;
+                loser = loser.left;
+            }
+        }
+        return lookup(prevSplit, winner);
+    }
+
     ISeq traverse(final Object key, final Object priority, Loser losers) {
         if (null == losers)
             return RT.list(new MapEntry(key, priority));

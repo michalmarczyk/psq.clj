@@ -246,3 +246,19 @@
        (apply psq/psqueue xs)
        (psq/psqueue* xs)
        (psq/psq (map vec (partition 2 xs))))))
+
+
+(defn subseq-nearest [psq test key]
+  (let [seqfn (cond
+                (#{< <=} test) rsubseq
+                (#{> >=} test) subseq
+                :else          (throw
+                                 (ex-info "Incorrect test in subseq-nearest" {})))]
+    (first (seqfn psq test key))))
+
+
+(defspec check-nearest 100
+  (prop/for-all [m psqgen
+                 test (gen/elements [< <= >= >])
+                 key gen/int]
+    (= (subseq-nearest m test key) (psq/nearest m test key))))

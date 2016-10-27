@@ -67,6 +67,21 @@
   (.rank ^PersistentPrioritySearchQueue psq key))
 
 
+(defn nearest
+  "Equivalent to, but more efficient than, (first (subseq* coll test x)),
+  where subseq* is clojure.core/subseq for test in #{>, >=} and
+  clojure.core/rsubseq for test in #{<, <=}."
+  [psq test key]
+  (let [psq ^PersistentPrioritySearchQueue psq]
+    (condp identical? test
+      < (.nearestLeft psq key false)
+      <= (.nearestLeft psq key true)
+      >= (.nearestRight psq key true)
+      > (.nearestRight psq key false)
+      (throw
+        (ex-info "The test argument to nearest must be one of <, <=, >=, >" {})))))
+
+
 (defn split
   "Returns
 
