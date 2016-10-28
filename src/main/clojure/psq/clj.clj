@@ -12,7 +12,8 @@
 
   {:author "Michał Marczyk"}
 
-  (:import (psq IPrioritySearchQueue PersistentPrioritySearchQueue)))
+  (:import (psq IPrioritySearchQueue PersistentPrioritySearchQueue)
+           (java.util Comparator)))
 
 
 (set! *warn-on-reflection* true)
@@ -42,6 +43,36 @@
   equal, they are handled as if by repeated uses of assoc."
   [& keypriorities]
   (psqueue* keypriorities))
+
+
+(defn psqueue-by*
+  "keypriority => key priority
+  Returns a new priority search queue with supplied mappings, using the
+  supplied comparators. If any keys are equal, they are handled as if by
+  repeated uses of assoc. NB. this function takes a seqable of keys and
+  priorities; see psqueue-by for a variant taking varargs."
+  [key-comparator priority-comparator keypriorities]
+  (PersistentPrioritySearchQueue/create
+    ^Comparator key-comparator
+    ^Comparator priority-comparator
+    (seq keypriorities)))
+
+
+(defn psqueue-by
+  "keypriority => key priority
+  Returns a new priority search queue with supplied mappings, using the
+  supplied comparators. If any keys are equal, they are handled as if by
+  repeated uses of assoc."
+  [key-comparator priority-comparator & keypriorities]
+  (psqueue-by* key-comparator priority-comparator keypriorities))
+
+
+(defn psq-by
+  "Returns a new priority search queue using the supplied comparators and
+  containing the contents of coll, which must be a collection of map entries or
+  doubleton vectors."
+  [key-comparator priority-comparator coll]
+  (reduce conj (psqueue-by key-comparator priority-comparator) coll))
 
 
 (defn ^:private priority-seq*
