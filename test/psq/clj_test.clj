@@ -245,7 +245,8 @@
     (= (apply sorted-map xs)
        (apply psq/psqueue xs)
        (psq/psqueue* xs)
-       (psq/psq (map vec (partition 2 xs))))))
+       (psq/psq (map vec (partition 2 xs)))
+       (psq/psq (apply hash-map xs)))))
 
 
 (defn subseq-nearest [psq test key]
