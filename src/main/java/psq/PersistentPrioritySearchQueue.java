@@ -1106,9 +1106,22 @@ public final class PersistentPrioritySearchQueue
     }
 
     public Object valAt(Object k, Object notFound) {
-        MapEntry entry = lookup(k, winner);
-        if (entry != null)
-            return entry.getValue();
+        if (null == winner)
+            return notFound;
+
+        if (0 == kcomp.compare(k, winner.key))
+            return winner.priority;
+
+        Loser losers = winner.losers;
+        while (null != losers) {
+            if (0 == kcomp.compare(k, losers.key))
+                return losers.priority;
+            if (0 < kcomp.compare(k, losers.split)) {
+                losers = losers.right;
+                continue;
+            }
+            losers = losers.left;
+        }
         return notFound;
     }
 

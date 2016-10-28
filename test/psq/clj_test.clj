@@ -79,9 +79,28 @@
                    wlset)
            (== (count wkeyset) (inc (count wlset)))))))
 
+
 (defspec check-invariant 100
   (prop/for-all [m (gen/not-empty psqgen)]
     (satisfies-invariant? m)))
+
+
+(defspec check-contains? 100
+  (prop/for-all [m (gen/map igen igen)
+                 k igen]
+    (let [psq (psq/psq m)]
+      (= (contains? m k)
+         (contains? psq k)))))
+
+
+(defspec check-get 100
+  (prop/for-all [m (gen/map igen igen)
+                 k igen]
+    (let [psq (psq/psq m)]
+      (and (= (get m k)
+              (get psq k))
+           (= (get m k ::not-found)
+              (get psq k ::not-found))))))
 
 
 (defspec check-nth 100
