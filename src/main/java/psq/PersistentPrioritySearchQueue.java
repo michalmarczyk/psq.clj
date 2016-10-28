@@ -3,6 +3,7 @@ package psq;
 import clojure.lang.AFn;
 import clojure.lang.APersistentMap;
 import clojure.lang.Box;
+import clojure.lang.Cons;
 import clojure.lang.Indexed;
 import clojure.lang.IObj;
 import clojure.lang.IPersistentMap;
@@ -553,6 +554,38 @@ public final class PersistentPrioritySearchQueue
             mf.setRight(key, priority, right, ubound);
         }
         play(mf);
+    }
+
+    public ISeq prioritySeq() {
+        if (0 == _count)
+            return null;
+
+        return new Cons(
+                new MapEntry(winner.key, winner.priority),
+                prioritySeq(_count - 1, winner.losers, winner.ubound)
+        );
+    }
+
+    ISeq prioritySeq(final int countdown, final Loser losers, final Object ubound) {
+        if (0 == countdown)
+            return null;
+
+        return new LazySeq(
+                new AFn() {
+                    public Object invoke() {
+                        MatchFrame mf = new MatchFrame();
+                        secondBest(losers, ubound, mf);
+                        Object lkey = mf.lkey;
+                        Object lpriority = mf.lpriority;
+                        Loser llosers = mf.llosers;
+                        Object lubound = mf.lubound;
+                        return new Cons(
+                                new MapEntry(lkey, lpriority),
+                                prioritySeq(countdown - 1, llosers, lubound)
+                        );
+                    }
+                }
+        );
     }
 
     Winner delete(Object key, Winner winner, Box found) {

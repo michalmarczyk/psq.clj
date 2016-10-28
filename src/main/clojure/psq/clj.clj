@@ -75,20 +75,12 @@
   (reduce conj (psqueue-by key-comparator priority-comparator) coll))
 
 
-(defn ^:private priority-seq*
-  [^long n psq]
-  (lazy-seq
-    (if (zero? n)
-      nil
-      (cons (peek psq) (priority-seq* (dec n) (pop psq))))))
-
-
 (defn priority-seq
   "Returns a seq of entries of the given PSQ in ascending order of
   priority. Entries with equal priorities may be returned in arbitrary
   order."
   [psq]
-  (priority-seq* (count psq) psq))
+  (.prioritySeq ^PersistentPrioritySearchQueue psq))
 
 
 (defn rank
