@@ -5,10 +5,11 @@
   for Priority Search Queues.
 
   In addition to the functionality presented in the paper, this implementation
-  supports nth (in key order), rank (lookup a key's index in key order) split
-  (sub-PSQs less/greater than the given key, plus the entry at the key if
-  present) and subrange (sub-PSQs bounded by the given keys), all in
-  logarithmic time."
+  supports nearest (look up the value at the key closest to and less/greater
+  than the given key, inclusive or exclusive), nth (in key order), rank (look
+  up a key's index in key order), split (sub-PSQs less/greater than the given
+  key, plus the entry at the key if present) and subrange (sub-PSQs bounded by
+  the given keys), all in logarithmic time."
 
   {:author "Michał Marczyk"}
 
