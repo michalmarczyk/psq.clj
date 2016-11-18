@@ -182,12 +182,37 @@
    (.atMostRange ^IPrioritySearchQueue psq low high ubound)))
 
 
+(defn ^:private below
+  ([psq ubound]
+   (.below ^IPrioritySearchQueue psq ubound))
+  ([psq low high ubound]
+   (.belowRange ^IPrioritySearchQueue psq low high ubound)))
+
+
+(defn seq<
+  "Like seq, but only returns entries with priorities < than the given ubound
+  in the ordering determined by psq's priority comparator. This is more
+  efficient than using filter."
+  [psq ubound]
+  (below psq ubound))
+
+
 (defn seq<=
   "Like seq, but only returns entries with priorities <= than the given ubound
   in the ordering determined by psq's priority comparator. This is more
   efficient than using filter."
   [psq ubound]
   (at-most psq ubound))
+
+
+(defn subseq<
+  "Like subseq, but only returns entries with priorities < than the given
+  ubound in the ordering determined by psq's priority comparator. This is more
+  efficient than using subseq and filter."
+  ([psq ubound test limit]
+   (seq< (subrange psq test limit) ubound))
+  ([psq ubound start-test start end-test end]
+   (seq< (subrange psq start-test start end-test end) ubound)))
 
 
 (defn subseq<=
@@ -207,12 +232,39 @@
    (.reverseAtMostRange ^IPrioritySearchQueue psq low high ubound)))
 
 
+(defn ^:private reverse-below
+  ([psq ubound]
+   (.reverseBelow ^IPrioritySearchQueue psq ubound))
+  ([psq low high ubound]
+   (.reverseBelowRange ^IPrioritySearchQueue psq low high ubound)))
+
+
+(defn rseq<
+  "Like rseq, but only returns entries with priorities < than the given ubound
+  in the ordering determined by psq's priority comparator. This is more
+  efficient than using rseq and filter."
+  [psq ubound]
+  (reverse-below psq ubound))
+
+
 (defn rseq<=
   "Like rseq, but only returns entries with priorities <= than the given
   ubound in the ordering determined by psq's priority comparator. This is more
   efficient than using rseq and filter."
   [psq ubound]
   (reverse-at-most psq ubound))
+
+
+(defn rsubseq<
+  "Like rsubseq, but only returns entries with priorities < than the given
+  ubound in the ordering determined by psq's priority comparator. This is more
+  efficient than using rsubseq and filter."
+  ([psq ubound test limit]
+   (let [sub (subrange psq test limit)]
+     (reverse-below sub ubound)))
+  ([psq ubound start-test start end-test end]
+   (let [sub (subrange psq start-test start end-test end)]
+     (reverse-below sub ubound))))
 
 
 (defn rsubseq<=

@@ -920,6 +920,26 @@ public final class PersistentPrioritySearchQueue
         );
     }
 
+    ISeq traverseBelow(final Object priority, final Winner winner) {
+        if (null == winner || pcomp.compare(winner.priority, priority) >= 0)
+            return PersistentList.EMPTY;
+        final Match match = unplay(winner);
+        if (null == match.right)
+            return RT.list(new MapEntry(match.left.key, match.left.priority));
+        return concat(
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return traverseBelow(priority, match.left);
+                    }
+                }),
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return traverseBelow(priority, match.right);
+                    }
+                })
+        );
+    }
+
     ISeq rtraverseAtMost(final Object priority, Winner winner) {
         if (null == winner || pcomp.compare(winner.priority, priority) > 0)
             return PersistentList.EMPTY;
@@ -935,6 +955,26 @@ public final class PersistentPrioritySearchQueue
                 new LazySeq(new AFn() {
                     public ISeq invoke() {
                         return rtraverseAtMost(priority, match.left);
+                    }
+                })
+        );
+    }
+
+    ISeq rtraverseBelow(final Object priority, Winner winner) {
+        if (null == winner || pcomp.compare(winner.priority, priority) >= 0)
+            return PersistentList.EMPTY;
+        final Match match = unplay(winner);
+        if (null == match.right)
+            return RT.list(new MapEntry(match.left.key, match.left.priority));
+        return concat(
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return rtraverseBelow(priority, match.right);
+                    }
+                }),
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return rtraverseBelow(priority, match.left);
                     }
                 })
         );
@@ -963,6 +1003,35 @@ public final class PersistentPrioritySearchQueue
                     public ISeq invoke() {
                         return kcomp.compare(lubound, high) <= 0 ?
                                 traverseAtMostRange(low, high, priority, match.right) :
+                                null;
+                    }
+                })
+        );
+    }
+
+    ISeq traverseBelowRange(final Object low, final Object high, final Object priority, Winner winner) {
+        if (null == winner || pcomp.compare(winner.priority, priority) >= 0)
+            return PersistentList.EMPTY;
+        final Match match = unplay(winner);
+        if (null == match.right) {
+            Object lkey = match.left.key;
+            if (kcomp.compare(low, lkey) <= 0 && kcomp.compare(lkey, high) <= 0)
+                return RT.list(new MapEntry(lkey, match.left.priority));
+            return PersistentList.EMPTY;
+        }
+        final Object lubound = match.left.ubound;
+        return concat(
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return kcomp.compare(low, lubound) <= 0 ?
+                                traverseBelowRange(low, high, priority, match.left) :
+                                null;
+                    }
+                }),
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return kcomp.compare(lubound, high) <= 0 ?
+                                traverseBelowRange(low, high, priority, match.right) :
                                 null;
                     }
                 })
@@ -998,22 +1067,66 @@ public final class PersistentPrioritySearchQueue
         );
     }
 
+    ISeq rtraverseBelowRange(final Object low, final Object high, final Object priority, Winner winner) {
+        if (null == winner || pcomp.compare(winner.priority, priority) >= 0)
+            return PersistentList.EMPTY;
+        final Match match = unplay(winner);
+        if (null == match.right) {
+            Object lkey = match.left.key;
+            if (kcomp.compare(low, lkey) <= 0 && kcomp.compare(lkey, high) <= 0)
+                return RT.list(new MapEntry(lkey, match.left.priority));
+            return PersistentList.EMPTY;
+        }
+        final Object lubound = match.left.ubound;
+        return concat(
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return kcomp.compare(lubound, high) <= 0 ?
+                                rtraverseBelowRange(low, high, priority, match.right) :
+                                null;
+                    }
+                }),
+                new LazySeq(new AFn() {
+                    public ISeq invoke() {
+                        return kcomp.compare(low, lubound) <= 0 ?
+                                rtraverseBelowRange(low, high, priority, match.left) :
+                                null;
+                    }
+                })
+        );
+    }
     // IPrioritySearchQueue
 
     public ISeq atMost(Object priority) {
         return traverseAtMost(priority, winner);
     }
 
+    public ISeq below(Object priority) {
+        return traverseBelow(priority, winner);
+    }
+
     public ISeq atMostRange(Object low, Object high, Object priority) {
         return traverseAtMostRange(low, high, priority, winner);
+    }
+
+    public ISeq belowRange(Object low, Object high, Object priority) {
+        return traverseBelowRange(low, high, priority, winner);
     }
 
     public ISeq reverseAtMost(Object priority) {
         return rtraverseAtMost(priority, winner);
     }
 
+    public ISeq reverseBelow(Object priority) {
+        return rtraverseBelow(priority, winner);
+    }
+
     public ISeq reverseAtMostRange(Object low, Object high, Object priority) {
         return rtraverseAtMostRange(low, high, priority, winner);
+    }
+
+    public ISeq reverseBelowRange(Object low, Object high, Object priority) {
+        return rtraverseBelowRange(low, high, priority, winner);
     }
 
     // split

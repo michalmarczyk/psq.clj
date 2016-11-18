@@ -301,6 +301,39 @@
            (= sub (subseq-subrange m >= k <= k))))))
 
 
+(defn filter-seq<
+  [psq ubound]
+  (filter #(< (val %) ubound)
+          (seq psq)))
+
+
+(defn filter-seq<=
+  [psq ubound]
+  (filter #(<= (val %) ubound)
+          (seq psq)))
+
+
+(defn filter-rseq<
+  [psq ubound]
+  (filter #(< (val %) ubound)
+          (rseq psq)))
+
+
+(defn filter-rseq<=
+  [psq ubound]
+  (filter #(<= (val %) ubound)
+          (rseq psq)))
+
+
+(defn filter-subseq<
+  ([psq ubound test limit]
+   (filter #(< (val %) ubound)
+           (subseq psq test limit)))
+  ([psq ubound start-test start end-test end]
+   (filter #(< (val %) ubound)
+           (subseq psq start-test start end-test end))))
+
+
 (defn filter-subseq<=
   ([psq ubound test limit]
    (filter #(<= (val %) ubound)
@@ -310,6 +343,15 @@
            (subseq psq start-test start end-test end))))
 
 
+(defn filter-rsubseq<
+  ([psq ubound test limit]
+   (filter #(< (val %) ubound)
+           (rsubseq psq test limit)))
+  ([psq ubound start-test start end-test end]
+   (filter #(< (val %) ubound)
+           (rsubseq psq start-test start end-test end))))
+
+
 (defn filter-rsubseq<=
   ([psq ubound test limit]
    (filter #(<= (val %) ubound)
@@ -317,6 +359,18 @@
   ([psq ubound start-test start end-test end]
    (filter #(<= (val %) ubound)
            (rsubseq psq start-test start end-test end))))
+
+
+(defspec check-subseq< 100
+  (prop/for-all [m psqgen
+                 [start end] (gen/such-that (fn [[l h]] (< l h))
+                                            (gen/tuple igen igen)
+                                            100)
+                 ubound igen
+                 start-test (gen/elements [> >=])
+                 end-test (gen/elements [< <=])]
+    (= (psq/subseq< m ubound start-test start end-test end)
+       (filter-subseq< m ubound start-test start end-test end))))
 
 
 (defspec check-subseq<= 100
@@ -331,6 +385,18 @@
        (filter-subseq<= m ubound start-test start end-test end))))
 
 
+(defspec check-rsubseq< 100
+  (prop/for-all [m psqgen
+                 [start end] (gen/such-that (fn [[l h]] (< l h))
+                                            (gen/tuple igen igen)
+                                            100)
+                 ubound igen
+                 start-test (gen/elements [> >=])
+                 end-test (gen/elements [< <=])]
+    (= (psq/rsubseq< m ubound start-test start end-test end)
+       (filter-rsubseq< m ubound start-test start end-test end))))
+
+
 (defspec check-rsubseq<= 100
   (prop/for-all [m psqgen
                  [start end] (gen/such-that (fn [[l h]] (< l h))
@@ -343,6 +409,15 @@
        (filter-rsubseq<= m ubound start-test start end-test end))))
 
 
+(defspec check-single-limit-subseq< 100
+  (prop/for-all [m psqgen
+                 ubound igen
+                 test (gen/elements [< <= >= >])
+                 limit igen]
+    (= (psq/subseq< m ubound test limit)
+       (filter-subseq< m ubound test limit))))
+
+
 (defspec check-single-limit-subseq<= 100
   (prop/for-all [m psqgen
                  ubound igen
@@ -350,6 +425,15 @@
                  limit igen]
     (= (psq/subseq<= m ubound test limit)
        (filter-subseq<= m ubound test limit))))
+
+
+(defspec check-single-limit-rsubseq< 100
+  (prop/for-all [m psqgen
+                 ubound igen
+                 test (gen/elements [< <= >= >])
+                 limit igen]
+    (= (psq/rsubseq< m ubound test limit)
+       (filter-rsubseq< m ubound test limit))))
 
 
 (defspec check-single-limit-rsubseq<= 100
@@ -361,18 +445,61 @@
        (filter-rsubseq<= m ubound test limit))))
 
 
+(defspec check-seq< 100
+  (prop/for-all [m psqgen
+                 ubound igen]
+    (= (psq/seq<= m ubound)
+       (filter-seq<= m ubound))))
+
+
 (defspec check-seq<= 100
   (prop/for-all [m psqgen
                  ubound igen]
     (= (psq/seq<= m ubound)
-       (filter #(<= (val %) ubound) (seq m)))))
+       (filter-seq<= m ubound))))
+
+
+(defspec check-rseq< 100
+  (prop/for-all [m psqgen
+                 ubound igen]
+    (= (psq/rseq<= m ubound)
+       (filter-rseq<= m ubound))))
 
 
 (defspec check-rseq<= 100
   (prop/for-all [m psqgen
                  ubound igen]
     (= (psq/rseq<= m ubound)
-       (filter #(<= (val %) ubound) (rseq m)))))
+       (filter-rseq<= m ubound))))
+
+
+(defn filter-seq<-by
+  [psq ^Comparator pcomp ubound]
+  (filter #(< (.compare pcomp (val %) ubound) 0) (seq psq)))
+
+
+(defn filter-seq<=-by
+  [psq ^Comparator pcomp ubound]
+  (filter #(<= (.compare pcomp (val %) ubound) 0) (seq psq)))
+
+
+(defn filter-rseq<-by
+  [psq ^Comparator pcomp ubound]
+  (filter #(< (.compare pcomp (val %) ubound) 0) (rseq psq)))
+
+
+(defn filter-rseq<=-by
+  [psq ^Comparator pcomp ubound]
+  (filter #(<= (.compare pcomp (val %) ubound) 0) (rseq psq)))
+
+
+(defn filter-subseq<-by
+  ([psq ^Comparator pcomp ubound test limit]
+   (filter #(< (.compare pcomp (val %) ubound) 0)
+           (subseq psq test limit)))
+  ([psq ^Comparator pcomp ubound start-test start end-test end]
+   (filter #(< (.compare pcomp (val %) ubound) 0)
+           (subseq psq start-test start end-test end))))
 
 
 (defn filter-subseq<=-by
@@ -384,6 +511,15 @@
            (subseq psq start-test start end-test end))))
 
 
+(defn filter-rsubseq<-by
+  ([psq ^Comparator pcomp ubound test limit]
+   (filter #(< (.compare pcomp (val %) ubound) 0)
+           (rsubseq psq test limit)))
+  ([psq ^Comparator pcomp ubound start-test start end-test end]
+   (filter #(< (.compare pcomp (val %) ubound) 0)
+           (rsubseq psq start-test start end-test end))))
+
+
 (defn filter-rsubseq<=-by
   ([psq ^Comparator pcomp ubound test limit]
    (filter #(<= (.compare pcomp (val %) ubound) 0)
@@ -391,6 +527,18 @@
   ([psq ^Comparator pcomp ubound start-test start end-test end]
    (filter #(<= (.compare pcomp (val %) ubound) 0)
            (rsubseq psq start-test start end-test end))))
+
+
+(defspec check-subseq<-by 100
+  (prop/for-all [m (psqgen-by > >)
+                 [start end] (gen/such-that (fn [[l h]] (> l h))
+                                            (gen/tuple igen igen)
+                                            100)
+                 ubound igen
+                 start-test (gen/elements [> >=])
+                 end-test (gen/elements [< <=])]
+    (= (psq/subseq< m ubound start-test start end-test end)
+       (filter-subseq<-by m > ubound start-test start end-test end))))
 
 
 (defspec check-subseq<=-by 100
@@ -405,6 +553,18 @@
        (filter-subseq<=-by m > ubound start-test start end-test end))))
 
 
+(defspec check-rsubseq<-by 100
+  (prop/for-all [m (psqgen-by > >)
+                 [start end] (gen/such-that (fn [[l h]] (> l h))
+                                            (gen/tuple igen igen)
+                                            100)
+                 ubound igen
+                 start-test (gen/elements [> >=])
+                 end-test (gen/elements [< <=])]
+    (= (psq/rsubseq< m ubound start-test start end-test end)
+       (filter-rsubseq<-by m > ubound start-test start end-test end))))
+
+
 (defspec check-rsubseq<=-by 100
   (prop/for-all [m (psqgen-by > >)
                  [start end] (gen/such-that (fn [[l h]] (> l h))
@@ -417,6 +577,15 @@
        (filter-rsubseq<=-by m > ubound start-test start end-test end))))
 
 
+(defspec check-single-limit-subseq<-by 100
+  (prop/for-all [m (psqgen-by > >)
+                 ubound igen
+                 test (gen/elements [< <= >= >])
+                 limit igen]
+    (= (psq/subseq< m ubound test limit)
+       (filter-subseq<-by m > ubound test limit))))
+
+
 (defspec check-single-limit-subseq<=-by 100
   (prop/for-all [m (psqgen-by > >)
                  ubound igen
@@ -424,6 +593,15 @@
                  limit igen]
     (= (psq/subseq<= m ubound test limit)
        (filter-subseq<=-by m > ubound test limit))))
+
+
+(defspec check-single-limit-rsubseq<-by 100
+  (prop/for-all [m (psqgen-by > >)
+                 ubound igen
+                 test (gen/elements [< <= >= >])
+                 limit igen]
+    (= (psq/rsubseq< m ubound test limit)
+       (filter-rsubseq<-by m > ubound test limit))))
 
 
 (defspec check-single-limit-rsubseq<=-by 100
@@ -435,18 +613,32 @@
        (filter-rsubseq<=-by m > ubound test limit))))
 
 
+(defspec check-seq<-by 100
+  (prop/for-all [m (psqgen-by > >)
+                 ubound igen]
+    (= (psq/seq< m ubound)
+       (filter-seq<-by m > ubound))))
+
+
 (defspec check-seq<=-by 100
   (prop/for-all [m (psqgen-by > >)
                  ubound igen]
     (= (psq/seq<= m ubound)
-       (filter #(<= (.compare ^Comparator > (val %) ubound) 0) (seq m)))))
+       (filter-seq<=-by m > ubound))))
+
+
+(defspec check-rseq<-by 100
+  (prop/for-all [m (psqgen-by > >)
+                 ubound igen]
+    (= (psq/rseq< m ubound)
+       (filter-rseq<-by m > ubound))))
 
 
 (defspec check-rseq<=-by 100
   (prop/for-all [m (psqgen-by > >)
                  ubound igen]
     (= (psq/rseq<= m ubound)
-       (filter #(<= (.compare ^Comparator > (val %) ubound) 0) (rseq m)))))
+       (filter-rseq<=-by m > ubound))))
 
 
 (defspec check-factories 100
