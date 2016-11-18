@@ -14,8 +14,8 @@ the given keys), all in logarithmic time.
 
 ## Usage
 
-There is a single public namespace called `psq.core`. See the included
-docstrings for details.
+There is a single public namespace called `psq.clj`. See the included docstrings
+for details.
 
 
 ## Releases and dependency information
