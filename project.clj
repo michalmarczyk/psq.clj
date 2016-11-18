@@ -8,4 +8,5 @@
   :java-source-paths ["src/main/java"]
   :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]
                                   [collection-check "0.1.6"]]
-                   :jvm-opts ^:replace ["-XX:+UseG1GC"]}})
+                   :jvm-opts ^:replace ["-XX:+UseG1GC"]}
+             :1.8 {:dependencies [[org.clojure/clojure "1.8.0"]]}})
