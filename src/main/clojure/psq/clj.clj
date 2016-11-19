@@ -4,6 +4,15 @@
   search pennants, see R. Hinze, A Simple Implementation Technique
   for Priority Search Queues.
 
+  Priority Search Queues are sorted maps that recognize an independent
+  ordering on their entries' values – in this context known as priorities – in
+  addition to the ordering on keys.
+
+  They support the full Clojure sorted map API, with (r)(sub)seq respecting
+  key order, as well as priority-based peek and pop, priority-order traversals
+  and highly efficient (r)(sub)seq-like key order traversals with an additional
+  < or <= constraint on the priorities of the returned entries.
+
   In addition to the functionality presented in the paper, this implementation
   supports nearest (look up the value at the key closest to and less/greater
   than the given key, inclusive or exclusive), nth (in key order), rank (look
