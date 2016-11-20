@@ -4,7 +4,7 @@
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [collection-check :refer [assert-map-like]])
+            [collection-check :as cc])
   (:import (clojure.lang MapEntry)
            (java.util Comparator)))
 
@@ -13,15 +13,15 @@
 
 
 (deftest collection-check
-  (is (assert-map-like 1000
-                       (psq/psqueue)
-                       igen igen {:ordered? true :base (sorted-map)})))
+  (is (cc/assert-map-like 1000
+                          (psq/psqueue)
+                          igen igen {:ordered? true :base (sorted-map)})))
 
 
 (deftest collection-check-by
-  (is (assert-map-like 1000
-                       (psq/psqueue-by > >)
-                       igen igen {:ordered? true :base (sorted-map-by >)})))
+  (is (cc/assert-map-like 1000
+                          (psq/psqueue-by > >)
+                          igen igen {:ordered? true :base (sorted-map-by >)})))
 
 
 (def psqgen
@@ -110,6 +110,20 @@
 (defspec check-invariant-by 100
   (prop/for-all [m (psqgen-by > >)]
     (satisfies-invariant? m)))
+
+
+(defspec check-invariant-collection-check 100
+  (prop/for-all [actions (#'cc/gen-map-actions igen igen false true)]
+    (let [[psq] (#'cc/build-collections
+                  (psq/psqueue) (sorted-map) false actions)]
+      (satisfies-invariant? psq))))
+
+
+(defspec check-invariant-collection-check-by 100
+  (prop/for-all [actions (#'cc/gen-map-actions igen igen false true)]
+    (let [[psq] (#'cc/build-collections
+                  (psq/psqueue-by > >) (sorted-map-by >) false actions)]
+      (satisfies-invariant? psq))))
 
 
 (defspec check-contains? 100
