@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.9.0-alpha14"]]
   :source-paths ["src/main/clojure"]
   :java-source-paths ["src/main/java"]
+  :aliases {"test-all" ["with-profile" "dev:dev,1.8" "do" "clean," "test"]}
   :profiles {:dev {:dependencies [[org.clojure/test.check "0.9.0"]
                                   [collection-check "0.1.6"]]
                    :jvm-opts ^:replace ["-XX:+UseG1GC"]}
