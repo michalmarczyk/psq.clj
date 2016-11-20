@@ -244,6 +244,18 @@
        (map set (partition-by val (sort-by val (seq m)))))))
 
 
+(defn peek-pop-priority-seq [psq]
+  (if (seq psq)
+    (cons (peek psq)
+          (lazy-seq (peek-pop-priority-seq (pop psq))))))
+
+
+(defspec check-peek-pop 100
+  (prop/for-all [m psqgen]
+    (= (psq/priority-seq m)
+       (peek-pop-priority-seq m))))
+
+
 (defspec check-priority-seq-by 100
   (prop/for-all [m (psqgen-by > >)]
     (= (map set (partition-by val (psq/priority-seq m)))
