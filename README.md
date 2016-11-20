@@ -232,10 +232,8 @@ Also available:
 ## Releases and dependency information
 
 This is an experimental library.
-[Alpha releases are available from Clojars](https://clojars.org/psq.clj),
-however a custom build may currently be necessary for use with versions of
-Clojure other than the one used to build the release. (This will be fixed in
-a future release.) Follow the link above to discover the current release number.
+[Alpha releases are available from Clojars](https://clojars.org/psq.clj).
+Follow the link above to discover the current release number.
 
 [Leiningen](http://leiningen.org/) dependency information:
 
