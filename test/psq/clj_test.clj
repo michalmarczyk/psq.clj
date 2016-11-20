@@ -27,17 +27,35 @@
 (def psqgen
   (gen/bind
     (gen/sorted-set igen)
-    (fn [ks]
-      (let [ps (gen/sample igen (count ks))]
-        (gen/return (psq/psqueue* (interleave (vec ks) ps)))))))
+    (fn [init-ks]
+      (let [init-ps (gen/sample igen (count init-ks))
+            init-keypriorities (interleave init-ks init-ps)]
+        (gen/bind
+          (#'cc/gen-map-actions igen igen false true)
+          (fn [actions]
+            (gen/return
+              (first (#'cc/build-collections
+                       (psq/psqueue* init-keypriorities)
+                       (apply sorted-map init-keypriorities)
+                       false
+                       actions)))))))))
 
 
 (defn psqgen-by [kcomp pcomp]
   (gen/bind
     (gen/sorted-set igen)
-    (fn [ks]
-      (let [ps (gen/sample igen (count ks))]
-        (gen/return (psq/psqueue-by* kcomp pcomp (interleave (vec ks) ps)))))))
+    (fn [init-ks]
+      (let [init-ps (gen/sample igen (count init-ks))
+            init-keypriorities (interleave init-ks init-ps)]
+        (gen/bind
+          (#'cc/gen-map-actions igen igen false true)
+          (fn [actions]
+            (gen/return
+              (first (#'cc/build-collections
+                       (psq/psqueue-by* kcomp pcomp init-keypriorities)
+                       (apply sorted-map-by kcomp init-keypriorities)
+                       false
+                       actions)))))))))
 
 
 (defn loser-node-set
