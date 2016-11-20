@@ -601,9 +601,13 @@ public final class PersistentPrioritySearchQueue
         }
         Match match = unplay(winner);
         Object lubound = match.left.ubound;
-        if (kcomp.compare(key, lubound) <= 0)
-            return play(delete(key, match.left, found), match.right);
-        return play(match.left, delete(key, match.right, found));
+        int c = kcomp.compare(key, lubound);
+        Winner sub = delete(key, c <= 0 ? match.left : match.right, found);
+        if (null == found.val)
+            return winner;
+        if (c <= 0)
+            return play(sub, match.right);
+        return play(match.left, sub);
     }
 
     Winner insert(Object key, Object priority, Winner winner, Box found) {
