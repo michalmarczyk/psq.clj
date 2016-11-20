@@ -64,6 +64,7 @@
   supplied comparators. If any keys are equal, they are handled as if by
   repeated uses of assoc. NB. this function takes a seqable of keys and
   priorities; see psqueue-by for a variant taking varargs."
+  {:added "0.0.2"}
   [key-comparator priority-comparator keypriorities]
   (PersistentPrioritySearchQueue/create
     ^Comparator key-comparator
@@ -76,6 +77,7 @@
   Returns a new priority search queue with supplied mappings, using the
   supplied comparators. If any keys are equal, they are handled as if by
   repeated uses of assoc."
+  {:added "0.0.2"}
   [key-comparator priority-comparator & keypriorities]
   (psqueue-by* key-comparator priority-comparator keypriorities))
 
@@ -84,6 +86,7 @@
   "Returns a new priority search queue using the supplied comparators and
   containing the contents of coll, which must be a collection of map entries or
   doubleton vectors."
+  {:added "0.0.2"}
   [key-comparator priority-comparator coll]
   (reduce conj (psqueue-by key-comparator priority-comparator) coll))
 
@@ -109,6 +112,7 @@
   "Equivalent to, but more efficient than, (first (subseq* coll test x)),
   where subseq* is clojure.core/subseq for test in #{>, >=} and
   clojure.core/rsubseq for test in #{<, <=}."
+  {:added "0.0.2"}
   [psq test key]
   (let [psq ^PersistentPrioritySearchQueue psq]
     (condp identical? test
@@ -209,6 +213,7 @@
   "Like seq, but only returns entries with priorities < than the given ubound
   in the ordering determined by psq's priority comparator. This is more
   efficient than using filter."
+  {:added "0.0.2"}
   [psq ubound]
   (below psq ubound))
 
@@ -226,6 +231,7 @@
   "Like subseq, but only returns entries with priorities < than the given
   ubound in the ordering determined by psq's priority comparator. This is more
   efficient than using subseq and filter."
+  {:added "0.0.2"}
   ([psq ubound test limit]
    (seq< (subrange psq test limit) ubound))
   ([psq ubound start-test start end-test end]
@@ -261,6 +267,7 @@
   "Like rseq, but only returns entries with priorities < than the given ubound
   in the ordering determined by psq's priority comparator. This is more
   efficient than using rseq and filter."
+  {:added "0.0.2"}
   [psq ubound]
   (reverse-below psq ubound))
 
@@ -278,6 +285,7 @@
   "Like rsubseq, but only returns entries with priorities < than the given
   ubound in the ordering determined by psq's priority comparator. This is more
   efficient than using rsubseq and filter."
+  {:added "0.0.2"}
   ([psq ubound test limit]
    (let [sub (subrange psq test limit)]
      (reverse-below sub ubound)))
