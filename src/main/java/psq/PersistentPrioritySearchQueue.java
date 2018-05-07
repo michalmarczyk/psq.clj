@@ -1213,9 +1213,27 @@ public final class PersistentPrioritySearchQueue
         throw new UnsupportedOperationException();
     }
 
+    static private clojure.lang.IFn coreConcat =
+            (clojure.lang.IFn) ((clojure.lang.Var) clojure.java.api.Clojure.var(
+                    "clojure.core/concat"
+            )).getRawRoot();
+
+    static ISeq directConcat(final ISeq xs, final ISeq ys) {
+        return new LazySeq(new AFn() {
+            public Object invoke() {
+                ISeq s = RT.seq(xs);
+                if (null == s)
+                    return ys;
+                return new Cons(s.first(), directConcat(s.more(), ys));
+            }
+        });
+    }
+
     static ISeq concat(ISeq xs, ISeq ys) {
         // NB. relying on an implementation detail
-        return (ISeq) clojure.core$concat.invokeStatic(xs, ys);
+        //return (ISeq) clojure.core$concat.invokeStatic(xs, ys);
+        //return (ISeq) coreConcat.invoke(xs, ys);
+        return directConcat(xs, ys);
     }
 
     // clojure.lang.Associative
