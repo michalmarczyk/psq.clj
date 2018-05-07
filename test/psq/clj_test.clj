@@ -4,7 +4,7 @@
             [clojure.test.check.clojure-test :refer [defspec]]
             [clojure.test.check.generators :as gen]
             [clojure.test.check.properties :as prop]
-            [collection-check :as cc])
+            [collection-check.core :as cc])
   (:import (clojure.lang MapEntry)
            (java.util Comparator)))
 
@@ -13,15 +13,15 @@
 
 
 (deftest collection-check
-  (is (cc/assert-map-like 1000
-                          (psq/psqueue)
-                          igen igen {:ordered? true :base (sorted-map)})))
+  (cc/assert-map-like 1000
+                      (psq/psqueue)
+                      igen igen {:ordered? true :base (sorted-map)}))
 
 
 (deftest collection-check-by
-  (is (cc/assert-map-like 1000
-                          (psq/psqueue-by > >)
-                          igen igen {:ordered? true :base (sorted-map-by >)})))
+  (cc/assert-map-like 1000
+                      (psq/psqueue-by > >)
+                      igen igen {:ordered? true :base (sorted-map-by >)}))
 
 
 (def psqgen
